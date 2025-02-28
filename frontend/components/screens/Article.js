@@ -27,6 +27,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import Meteor, { withTracker, ReactiveDict } from '@meteorrn/core';
 import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
+import * as NavigationBar from 'expo-navigation-bar';
 import ArticleQuestions from '../articles/ArticleQuestions';
 import ExplanationModal from '../articles/ExplanationModal';
 import FurtherRecommendations from '../articles/FurtherRecommendations';
@@ -42,7 +43,6 @@ import { formatDateTime } from '../../lib/utils/date_formatting';
 import { collectionManager } from '../../lib/utils/collectionManager';
 import { removeWeirdMinusSignsInFrontOfString } from '../../lib/utils/utils';
 import { NAVIGATION_ICONS } from '../../lib/parameters/icons';
-import * as NavigationBar from 'expo-navigation-bar';
 
 const bookmarkIconSolid = require('../../assets/icons/bookmarks/bookmark__black--solid.png');
 const bookmarkIconBordered = require('../../assets/icons/bookmarks/bookmark__black--bordered.png');
@@ -75,7 +75,9 @@ class InnerArticle extends React.Component {
 
     // Reference for swiping and double tap gesture
     swipeGestureRef = React.createRef();
+
     doubleTapGestureRef = React.createRef();
+
     scrollViewRef = React.createRef();
 
     constructor(props) {
@@ -131,7 +133,7 @@ class InnerArticle extends React.Component {
         this._mounted = true;
 
         this.currentOffsetValue = this.props.currentOffsetValue;
-        
+
         // code for the swiping gesture
         this.sensitivityVelocity = 300;
         this.sensitivityDistanceLeft = 75;
@@ -161,7 +163,6 @@ class InnerArticle extends React.Component {
             this.swipeGesture,
             this.doubleTapGesture
         );
-
     }
 
     componentDidMount() {
@@ -257,7 +258,7 @@ class InnerArticle extends React.Component {
 
         // if the user has scrolled more than 80% of the article, the article is considered as read
         // next time will still reset the currentOffsetValue to 0
-        if (this.maxOffsetValue/this.articleHeight>0.8){
+        if (this.maxOffsetValue / this.articleHeight > 0.8) {
             this.currentOffsetValue = 0;
         }
         Meteor.call('articleViews.leaveAt.update', this.props.articleId, this.currentOffsetValue);
@@ -466,7 +467,7 @@ class InnerArticle extends React.Component {
         const maxScrolledContent = (this.windowContentHeight + this.maxOffsetValue) / this.articleHeight;
 
         this.currentOffsetValue = nativeEvent.contentOffset.y;
-        
+
         if (maxScrolledContent > maxScrolledContentDB) {
             this.checkIsConnected();
             Meteor.call('articleViews.maxScrolledContent.update', articleId, maxScrolledContent);
@@ -503,7 +504,7 @@ class InnerArticle extends React.Component {
         );
     }
 
-    jumpToLastTime(){
+    jumpToLastTime() {
         this.scrollViewRef.current.scrollTo({ y: this.props.currentOffsetValue, animated: true });
     }
 
@@ -813,9 +814,9 @@ class InnerArticle extends React.Component {
             experimentConfig,
             nextNews,
         } = this.props;
-        const maxNrFurtherRecArticles = experimentConfig.maxNrFurtherRecArticles;
-        var id = articleId
-        if(furRecNewsArticles._docs.length > 0){
+        const { maxNrFurtherRecArticles } = experimentConfig;
+        let id = articleId;
+        if (furRecNewsArticles._docs.length > 0) {
             console.log(furRecNewsArticles._docs.length);
             id = furRecNewsArticles._docs[0]._id;
         }
@@ -1110,341 +1111,344 @@ class InnerArticle extends React.Component {
             );
         }
 
-        if(Platform.OS === 'android'){
+        if (Platform.OS === 'android') {
             NavigationBar.setBackgroundColorAsync(DynamicColors.getColors().PRIMARY_BACKGROUND);
         }
 
         return (
-                <View style={styles().container}>
-                    {Platform.OS === "ios" ? (
-                        <StatusBar
-                            barStyle={DynamicColors.getStatusBarStyle()}
-                            hidden={false}
-                        />
-                    ) : (
-                        <StatusBar
-                            barStyle={DynamicColors.getStatusBarStyle()}
-                            hidden={false}
-                            backgroundColor={DynamicColors.getColors().PRIMARY_BACKGROUND}
-                        />
-                    )}
-                    <ScrollView
-                        onMomentumScrollEnd={this.handleScroll}
-                        onScrollEndDrag={this.handleScroll}
-                        contentContainerStyle={[
-                            styles().scrollViewContent,
-                            { paddingBottom: insets.bottom },
-                        ]}
-                        // FIX for bug in ios 13, scroll Views all over the place
-                        scrollIndicatorInsets={{ right: 1 }}
-                        simultaneousHandlers={[this.swipeGestureRef, this.doubleTapGestureRef]}
-                        ref={this.scrollViewRef}
-                        onLayout={() => this.jumpToLastTime()}
-                    >
-                        <ExplanationModal
-                            isVisible={this.state.explanationVisible}
-                            closeModal={this.handlePressCloseExplanationModal}
-                            explanationArticle={this.props.explanationArticle}
-                        />
-                        <GestureDetector gesture={this.composedGesture}>
-                            <View onLayout={this.getViewHeight}>
-                                <TouchableWithoutFeedback
-                                    onPress={this.handleDoubleTapFavorite}
-                                >
-                                    <View style={styles().headerContainer}>
-                                        <Text style={newsArticlesStyleGenerator().title}>
-                                            {article.title || this.state.fallbackArticle.title}
-                                        </Text>
-                                        {this.articleLead}
-                                        {this.articleDate}
-                                    </View>
-                                </TouchableWithoutFeedback>
+            <View style={styles().container}>
+                {Platform.OS === 'ios' ? (
+                    <StatusBar
+                        barStyle={DynamicColors.getStatusBarStyle()}
+                        hidden={false}
+                    />
+                ) : (
+                    <StatusBar
+                        barStyle={DynamicColors.getStatusBarStyle()}
+                        hidden={false}
+                        backgroundColor={DynamicColors.getColors().PRIMARY_BACKGROUND}
+                    />
+                )}
+                <ScrollView
+                    onMomentumScrollEnd={this.handleScroll}
+                    onScrollEndDrag={this.handleScroll}
+                    contentContainerStyle={[
+                        styles().scrollViewContent,
+                        { paddingBottom: insets.bottom },
+                    ]}
+                    // FIX for bug in ios 13, scroll Views all over the place
+                    scrollIndicatorInsets={{ right: 1 }}
+                    simultaneousHandlers={[ this.swipeGestureRef, this.doubleTapGestureRef ]}
+                    ref={this.scrollViewRef}
+                    onLayout={() => this.jumpToLastTime()}
+                >
+                    <ExplanationModal
+                        isVisible={this.state.explanationVisible}
+                        closeModal={this.handlePressCloseExplanationModal}
+                        explanationArticle={this.props.explanationArticle}
+                    />
+                    <GestureDetector gesture={this.composedGesture}>
+                        <View onLayout={this.getViewHeight}>
+                            <TouchableWithoutFeedback
+                                onPress={this.handleDoubleTapFavorite}
+                            >
+                                <View style={styles().headerContainer}>
+                                    <Text style={newsArticlesStyleGenerator().title}>
+                                        {article.title || this.state.fallbackArticle.title}
+                                    </Text>
+                                    {this.articleLead}
+                                    {this.articleDate}
+                                </View>
+                            </TouchableWithoutFeedback>
 
-                                {article.articleType === "text" && this.articleImage}
-                                {
-                                    article.articleType === "video" && (
-                                        <View style={styles().container}>
-                                            <View style={styles().video}>
-                                                <Video
-                                                    ref={(r) => (this.video = r)}
-                                                    resizeMode="cover"
-                                                    style={{ ...StyleSheet.absoluteFill }}
-                                                    onPlaybackStatusUpdate={(playbackStatus) => {
-                                                        if (this._mounted) {
-                                                            this.progress(playbackStatus.positionMillis);
-                                                            this.buffering(playbackStatus.isBuffering);
-                                                            this.onPlaybackStatusUpdate(playbackStatus);
-                                                        }
-                                                    }}
-                                                    // shouldPlay={true}
-                                                    onFullscreenUpdate={(event) =>
-                                                        this.onFullscreenUpdate(event)
+                            {article.articleType === 'text' && this.articleImage}
+                            {
+                                article.articleType === 'video' && (
+                                    <View style={styles().container}>
+                                        <View style={styles().video}>
+                                            <Video
+                                                ref={r => (this.video = r)}
+                                                resizeMode="cover"
+                                                style={{ ...StyleSheet.absoluteFill }}
+                                                onPlaybackStatusUpdate={(playbackStatus) => {
+                                                    if (this._mounted) {
+                                                        this.progress(playbackStatus.positionMillis);
+                                                        this.buffering(playbackStatus.isBuffering);
+                                                        this.onPlaybackStatusUpdate(playbackStatus);
                                                     }
+                                                }}
+                                                // shouldPlay={true}
+                                                onFullscreenUpdate={event => this.onFullscreenUpdate(event)
+                                                }
+                                            />
+
+                                            {isBuffering && (
+                                                <ActivityIndicator
+                                                    size="large"
+                                                    color="#ffffff"
+                                                    style={styles().overlay}
                                                 />
+                                            )}
+                                            <View style={styles().overlay}>
+                                                {/* now we can remove this not */}
+                                                {overlay ? (
+                                                    <View
+                                                        style={{
+                                                            ...styles().overlaySet,
+                                                            backgroundColor: '#0006',
+                                                        }}
+                                                    >
+                                                        <Icon
+                                                            name="backward"
+                                                            style={styles().icon_overlay}
+                                                            onPress={this.backward}
+                                                        />
+                                                        <Icon
+                                                            name={paused ? 'play' : 'pause'}
+                                                            style={styles().icon_overlay}
+                                                            onPress={this.playPause}
+                                                        />
 
-                                                {isBuffering && (
-                                                    <ActivityIndicator
-                                                        size="large"
-                                                        color="#ffffff"
-                                                        style={styles().overlay}
-                                                    />
-                                                )}
-                                                <View style={styles().overlay}>
-                                                    {/* now we can remove this not */}
-                                                    {overlay ? (
-                                                        <View
-                                                            style={{
-                                                                ...styles().overlaySet,
-                                                                backgroundColor: "#0006",
-                                                            }}
-                                                        >
-                                                            <Icon
-                                                                name="backward"
-                                                                style={styles().icon_overlay}
-                                                                onPress={this.backward}
-                                                            />
-                                                            <Icon
-                                                                name={paused ? "play" : "pause"}
-                                                                style={styles().icon_overlay}
-                                                                onPress={this.playPause}
-                                                            />
-
-                                                            <Icon
-                                                                name="forward"
-                                                                style={styles().icon_overlay}
-                                                                onPress={this.forward}
-                                                            />
-                                                            <View style={styles().sliderCont}>
-                                                                <View style={styles().timer}>
-                                                                    <Text style={{ color: "white" }}>
-                                                                        {this.getTime(currentTime)} /
-                                                                        {this.getTime(duration)}
-                                                                    </Text>
-                                                                    {!isNaN(currentTime) &&
-                                                                        currentTime > 0.1 && (
-                                                                            <Slider
-                                                                                // we want to add some param here
-                                                                                maximumTrackTintColor="white"
-                                                                                minimumTrackTintColor="white"
-                                                                                // now the slider and the time will work
-                                                                                thumbTintColor="white"
-                                                                                // slier input is 0 - 1 only so we want to convert sec to 0 - 1
-                                                                                value={currentTime / duration}
-                                                                                onValueChange={this.onslide}
-                                                                                onSlidingComplete={
-                                                                                    this.onSlidingComplete
-                                                                                }
-                                                                                style={{ width: "60%" }}
-                                                                            />
-                                                                        )}
-                                                                    <Icon
-                                                                        onPress={this.fullscreen}
-                                                                        name={
-                                                                            fullscreen ? "compress" : "expand"
+                                                        <Icon
+                                                            name="forward"
+                                                            style={styles().icon_overlay}
+                                                            onPress={this.forward}
+                                                        />
+                                                        <View style={styles().sliderCont}>
+                                                            <View style={styles().timer}>
+                                                                <Text style={{ color: 'white' }}>
+                                                                    {this.getTime(currentTime)}
+                                                                    {' '}
+                                                                    /
+                                                                    {this.getTime(duration)}
+                                                                </Text>
+                                                                {!isNaN(currentTime)
+                                                                        && currentTime > 0.1 && (
+                                                                        <Slider
+                                                                        // we want to add some param here
+                                                                        maximumTrackTintColor="white"
+                                                                        minimumTrackTintColor="white"
+                                                                        // now the slider and the time will work
+                                                                        thumbTintColor="white"
+                                                                        // slier input is 0 - 1 only so we want to convert sec to 0 - 1
+                                                                        value={currentTime / duration}
+                                                                        onValueChange={this.onslide}
+                                                                        onSlidingComplete={
+                                                                            this.onSlidingComplete
                                                                         }
-                                                                        style={{
-                                                                            fontSize: 25,
-                                                                            color: "white",
-                                                                        }}
+                                                                        style={{ width: '60%' }}
                                                                     />
-                                                                </View>
+                                                                )}
+                                                                <Icon
+                                                                    onPress={this.fullscreen}
+                                                                    name={
+                                                                        fullscreen ? 'compress' : 'expand'
+                                                                    }
+                                                                    style={{
+                                                                        fontSize: 25,
+                                                                        color: 'white',
+                                                                    }}
+                                                                />
                                                             </View>
                                                         </View>
-                                                    ) : (
-                                                        <View style={styles().overlaySet}>
-                                                            <TouchableWithoutFeedback
-                                                                onPress={this.youtubeSeekLeft}
-                                                            >
-                                                                <View style={{ flex: 1 }} />
-                                                            </TouchableWithoutFeedback>
-                                                            <TouchableWithoutFeedback
-                                                                onPress={this.youtubeSeekRight}
-                                                            >
-                                                                <View style={{ flex: 1 }} />
-                                                            </TouchableWithoutFeedback>
-                                                        </View>
-                                                    )}
-                                                </View>
-                                            </View>
-                                        </View>
-                                    )
-                                    // end video
-                                }
-                                {
-                                    article.articleType === "podcast" && (
-                                        // /start podcast
-                                        <View style={styles().container}>
-                                            <View
-                                                style={
-                                                    fullscreen
-                                                        ? styles().fullscreenVideo
-                                                        : styles().podcast
-                                                }
-                                            >
-                                                {this.articleImage}
-
-                                                <View style={styles().overlay}>
-                                                    {/* now we can remove this not */}
-                                                    {overlay ? (
-                                                        <View
-                                                            style={{
-                                                                ...styles().overlaySet,
-                                                                backgroundColor: "#0006",
-                                                            }}
+                                                    </View>
+                                                ) : (
+                                                    <View style={styles().overlaySet}>
+                                                        <TouchableWithoutFeedback
+                                                            onPress={this.youtubeSeekLeft}
                                                         >
-                                                            <Icon
-                                                                name="backward"
-                                                                style={styles().icon_overlay}
-                                                                onPress={this.backward_podcast}
-                                                            />
-                                                            {(GLOBAL.btmBarPlr[0] === undefined ||
-                                                                article._id !==
-                                                                GLOBAL.btmBarPlrInfos[0].articleId) && (
-                                                                    <Icon
-                                                                        name="play"
-                                                                        style={styles().icon_overlay}
-                                                                        onPress={this.playPause_podcast}
-                                                                    />
-                                                                )}
-
-                                                            <Icon
-                                                                name="forward"
-                                                                style={styles().icon_overlay}
-                                                                onPress={this.forward_podcast}
-                                                            />
-                                                            {article._id ===
-                                                                GLOBAL.btmBarPlrInfos[0].articleId && (
-                                                                    <View style={styles().sliderCont}>
-                                                                        <View style={styles().timer}>
-                                                                            <Text style={{ color: "white" }}>
-                                                                                {this.getTime(
-                                                                                    GLOBAL.btmBarPlrInfos[0].currentTime
-                                                                                )}{" "}
-                                                                                /{this.getTime(duration)}
-                                                                            </Text>
-                                                                            {!isNaN(
-                                                                                GLOBAL.btmBarPlrInfos[0].currentTime
-                                                                            ) &&
-                                                                                GLOBAL.btmBarPlrInfos[0].currentTime >
-                                                                                1 && (
-                                                                                    <Slider
-                                                                                        // we want to add some param here
-                                                                                        maximumTrackTintColor="white"
-                                                                                        minimumTrackTintColor="white"
-                                                                                        // now the slider and the time will work
-                                                                                        thumbTintColor="white"
-                                                                                        // slier input is 0 - 1 only so we want to convert sec to 0 - 1
-                                                                                        value={
-                                                                                            GLOBAL.btmBarPlrInfos[0]
-                                                                                                .currentTime / duration
-                                                                                        }
-                                                                                        onValueChange={
-                                                                                            this.onslide_podcast
-                                                                                        }
-                                                                                        style={{ width: "70%" }}
-                                                                                    />
-                                                                                )}
-                                                                        </View>
-                                                                    </View>
-                                                                )}
-                                                        </View>
-                                                    ) : (
-                                                        <View style={styles().overlaySet}>
-                                                            <TouchableNativeFeedback
-                                                                onPress={this.youtubeSeekLeft_podcast}
-                                                            >
-                                                                <View style={{ flex: 1 }} />
-                                                            </TouchableNativeFeedback>
-                                                            <TouchableNativeFeedback
-                                                                onPress={this.youtubeSeekRight_podcast}
-                                                            >
-                                                                <View style={{ flex: 1 }} />
-                                                            </TouchableNativeFeedback>
-                                                        </View>
-                                                    )}
-                                                </View>
+                                                            <View style={{ flex: 1 }} />
+                                                        </TouchableWithoutFeedback>
+                                                        <TouchableWithoutFeedback
+                                                            onPress={this.youtubeSeekRight}
+                                                        >
+                                                            <View style={{ flex: 1 }} />
+                                                        </TouchableWithoutFeedback>
+                                                    </View>
+                                                )}
                                             </View>
                                         </View>
-                                    )
-
-                                    // end podcast
-                                }
-
-                                <TouchableWithoutFeedback
-                                    onPress={this.handleDoubleTapFavorite}
-                                >
-                                    <View style={styles().bodyContainer}>
-                                        {this.articleBody}
                                     </View>
-                                </TouchableWithoutFeedback>
-                             </View>
-                            </GestureDetector>
+                                )
+                                // end video
+                            }
+                            {
+                                article.articleType === 'podcast' && (
+                                // /start podcast
+                                    <View style={styles().container}>
+                                        <View
+                                            style={
+                                                fullscreen
+                                                    ? styles().fullscreenVideo
+                                                    : styles().podcast
+                                            }
+                                        >
+                                            {this.articleImage}
 
-                            <ArticleQuestions
-                                articleId={articleId}
-                                setToast={(text) => this.setToast(text)}
-                                showTotal={totalLikesDislikesEnabled}
-                            />
+                                            <View style={styles().overlay}>
+                                                {/* now we can remove this not */}
+                                                {overlay ? (
+                                                    <View
+                                                        style={{
+                                                            ...styles().overlaySet,
+                                                            backgroundColor: '#0006',
+                                                        }}
+                                                    >
+                                                        <Icon
+                                                            name="backward"
+                                                            style={styles().icon_overlay}
+                                                            onPress={this.backward_podcast}
+                                                        />
+                                                        {(GLOBAL.btmBarPlr[0] === undefined
+                                                                || article._id
+                                                                !== GLOBAL.btmBarPlrInfos[0].articleId) && (
+                                                                <Icon
+                                                                name="play"
+                                                                style={styles().icon_overlay}
+                                                                onPress={this.playPause_podcast}
+                                                            />
+                                                        )}
 
-                            <FurtherRecommendations
-                                furRecNewsArticles={furRecNewsArticles}
-                                isLoading={isLoading}
-                                limitArticles={limit}
-                                experimentConfig={experimentConfig}
-                                onPress={this.pauseVideo}
-                            />
+                                                        <Icon
+                                                            name="forward"
+                                                            style={styles().icon_overlay}
+                                                            onPress={this.forward_podcast}
+                                                        />
+                                                        {article._id
+                                                                === GLOBAL.btmBarPlrInfos[0].articleId && (
+                                                                <View style={styles().sliderCont}>
+                                                                <View style={styles().timer}>
+                                                                        <Text style={{ color: 'white' }}>
+                                                                        {this.getTime(
+                                                                            GLOBAL.btmBarPlrInfos[0].currentTime
+                                                                        )}
+                                                                        {' '}
+                                                                        /
+                                                                        {this.getTime(duration)}
+                                                                    </Text>
+                                                                        {!isNaN(
+                                                                        GLOBAL.btmBarPlrInfos[0].currentTime
+                                                                    )
+                                                                                && GLOBAL.btmBarPlrInfos[0].currentTime
+                                                                                > 1 && (
+                                                                                <Slider
+                                                                            // we want to add some param here
+                                                                            maximumTrackTintColor="white"
+                                                                            minimumTrackTintColor="white"
+                                                                            // now the slider and the time will work
+                                                                            thumbTintColor="white"
+                                                                            // slier input is 0 - 1 only so we want to convert sec to 0 - 1
+                                                                            value={
+                                                                                GLOBAL.btmBarPlrInfos[0]
+                                                                                    .currentTime / duration
+                                                                            }
+                                                                            onValueChange={
+                                                                                this.onslide_podcast
+                                                                            }
+                                                                            style={{ width: '70%' }}
+                                                                        />
+                                                                    )}
+                                                                    </View>
+                                                            </View>
+                                                        )}
+                                                    </View>
+                                                ) : (
+                                                    <View style={styles().overlaySet}>
+                                                        <TouchableNativeFeedback
+                                                            onPress={this.youtubeSeekLeft_podcast}
+                                                        >
+                                                            <View style={{ flex: 1 }} />
+                                                        </TouchableNativeFeedback>
+                                                        <TouchableNativeFeedback
+                                                            onPress={this.youtubeSeekRight_podcast}
+                                                        >
+                                                            <View style={{ flex: 1 }} />
+                                                        </TouchableNativeFeedback>
+                                                    </View>
+                                                )}
+                                            </View>
+                                        </View>
+                                    </View>
+                                )
 
-                            <View style={styles().containerImprint}>
-                                <TouchableNativeFeedback
-                                    onPress={() => {
-                                        navigation.navigate("Contact");
-                                    }}
-                                >
-                                    <Text
-                                        style={[
-                                            newsArticlesStyleGenerator().paragraph,
-                                            { marginBottom: 0, textDecorationLine: "underline" },
-                                        ]}
-                                    >
-                                        {I18n.t("SETTINGS.IMPRINT")}
-                                    </Text>
-                                </TouchableNativeFeedback>
-                            </View>
+                                // end podcast
+                            }
 
-                            {/* Additional empty space is added, in order to make sure that the floating button does not
+                            <TouchableWithoutFeedback
+                                onPress={this.handleDoubleTapFavorite}
+                            >
+                                <View style={styles().bodyContainer}>
+                                    {this.articleBody}
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </GestureDetector>
+
+                    <ArticleQuestions
+                        articleId={articleId}
+                        setToast={text => this.setToast(text)}
+                        showTotal={totalLikesDislikesEnabled}
+                    />
+
+                    <FurtherRecommendations
+                        furRecNewsArticles={furRecNewsArticles}
+                        isLoading={isLoading}
+                        limitArticles={limit}
+                        experimentConfig={experimentConfig}
+                        onPress={this.pauseVideo}
+                    />
+
+                    <View style={styles().containerImprint}>
+                        <TouchableNativeFeedback
+                            onPress={() => {
+                                navigation.navigate('Contact');
+                            }}
+                        >
+                            <Text
+                                style={[
+                                    newsArticlesStyleGenerator().paragraph,
+                                    { marginBottom: 0, textDecorationLine: 'underline' },
+                                ]}
+                            >
+                                {I18n.t('SETTINGS.IMPRINT')}
+                            </Text>
+                        </TouchableNativeFeedback>
+                    </View>
+
+                    {/* Additional empty space is added, in order to make sure that the floating button does not
                             cover any elements at the end. The space is added only if the floating button appears, but the
                             bottom player does not. */}
-                            {fromArticleScreen && GLOBAL.btmBarPlr[0] === undefined && (
-                                <View style={{ paddingTop: 30 }} />
-                            )}
-                    </ScrollView>
-
-                    {GLOBAL.btmBarPlr[0] !== undefined && (
-                        <BottomBarMusicPlayer shrinked={fromArticleScreen ? 1 : 0} />
+                    {fromArticleScreen && GLOBAL.btmBarPlr[0] === undefined && (
+                        <View style={{ paddingTop: 30 }} />
                     )}
+                </ScrollView>
 
-                    {(
-                        <FloatingAction
-                            onPressMain={() => {
-                                navigation.navigate("Home");
-                            }}
-                            showBackground={false}
-                            floatingIcon={NAVIGATION_ICONS.home.active}
-                            iconWidth={20}
-                            iconHeight={20}
-                            color={DynamicColors.getColors().ACCENT_BACKGROUND}
-                        />
-                    )}
+                {GLOBAL.btmBarPlr[0] !== undefined && (
+                    <BottomBarMusicPlayer shrinked={fromArticleScreen ? 1 : 0} />
+                )}
 
-                    {/* this is to have blackscreen when returning from fullscreen to normal */}
-                    {fullscreen && <View style={styles().containerFullscreen} />}
+                {(
+                    <FloatingAction
+                        onPressMain={() => {
+                            navigation.navigate('Home');
+                        }}
+                        showBackground={false}
+                        floatingIcon={NAVIGATION_ICONS.home.active}
+                        iconWidth={20}
+                        iconHeight={20}
+                        color={DynamicColors.getColors().ACCENT_BACKGROUND}
+                    />
+                )}
 
-                    {this.state.errorToast && (
-                        <View style={styles().toast}>
-                            <Toast error>{this.state.errorToast}</Toast>
-                        </View>
-                    )}
-                </View>
+                {/* this is to have blackscreen when returning from fullscreen to normal */}
+                {fullscreen && <View style={styles().containerFullscreen} />}
+
+                {this.state.errorToast && (
+                    <View style={styles().toast}>
+                        <Toast error>{this.state.errorToast}</Toast>
+                    </View>
+                )}
+            </View>
         );
     }
 
@@ -1657,15 +1661,15 @@ export default withTracker(({ navigation }) => {
         sort: { prediction: -1, datePublished: -1 },
     });
     const newsNum = recList._docs.length;
-    options.set('curNews',newsNum);
-    if(newsLimit>LIMIT_ARTICLES && newsNum == newsLimit){
+    options.set('curNews', newsNum);
+    if (newsLimit > LIMIT_ARTICLES && newsNum == newsLimit) {
         options.set('isUpdated', false);
     }
-    var nextNews = articleId;
-    for(var i=0; i<newsNum; i++){
-        if(articleId === recList._docs[i]._id){
-            nextNews = recList._docs[(i+1) % newsNum]._id;
-            if(!isUpdated && i == newsNum-1){
+    let nextNews = articleId;
+    for (let i = 0; i < newsNum; i++) {
+        if (articleId === recList._docs[i]._id) {
+            nextNews = recList._docs[(i + 1) % newsNum]._id;
+            if (!isUpdated && i == newsNum - 1) {
                 options.set('isUpdated', true);
                 options.set('limit', options.get('limit') + LIMIT_ARTICLES);
             }
@@ -1680,9 +1684,9 @@ export default withTracker(({ navigation }) => {
             userId: MeteorOffline.user()._id,
         });
     const articleViewsUpgrade = collectionManager.collection('articleViewsUpgrade')
-    .findOne({
-        userId: MeteorOffline.user()._id,
-    });
+        .findOne({
+            userId: MeteorOffline.user()._id,
+        });
     // console.log(articleViewsUpgrade);
 
     // Also reuse subscription from Home.js for activeExperiment or experiments
@@ -1699,8 +1703,6 @@ export default withTracker(({ navigation }) => {
         // todo: activate again when articleViewsUpgrade is on prod server
 
 
-
-
     const totalLikesDislikesEnabled = config.totalLikesDislikesEnabled ? config.totalLikesDislikesEnabled : false;
     const maxNrFurtherRecArticles = config.maxNrFurtherRecArticles ? config.maxNrFurtherRecArticles : 0;
     const previewTitleLineHeight = config.previewTitleLineHeight ? config.previewTitleLineHeight : 2;
@@ -1714,7 +1716,7 @@ export default withTracker(({ navigation }) => {
     const maxScrolledContentDB = articleViews && articleViews.maxScrolledContent ? articleViews.maxScrolledContent : 0;
 
     const currentOffsetValue = articleViews && articleViews.currentOffsetValue ? articleViews.currentOffsetValue : 0;
-   
+
     // fromArticleScreen is necessary to know whether to load the Article explanations or to not
     const fromArticleScreen = navigation.getParam('fromArticleScreen', false);
     if (fromArticleScreen) {

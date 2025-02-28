@@ -113,5 +113,4 @@ Preview.propTypes = {
     large: PropTypes.bool,
     setToast: PropTypes.func.isRequired,
     articleType: PropTypes.string.isRequired,
-
 };

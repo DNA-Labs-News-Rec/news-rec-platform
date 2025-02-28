@@ -1,3 +1,5 @@
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prefer-stateless-function */
 import React from 'react';
 import {

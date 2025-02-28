@@ -1,4 +1,4 @@
-import React, { Component,useEffect,useState } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Header from './components/header/Header';
 import ModalContainer from './elements/modal/ModalContainer';
@@ -6,7 +6,9 @@ import Head from './components/static/Head';
 import { classNames } from '../lib/utils/utils';
 import { useTheme, ThemeProvider } from './context/ThemeContext';
 
-export default function App({ main, modal, isAtHome, isNaviHidden }){
+export default function App({
+    main, modal, isAtHome, isNaviHidden,
+}) {
 
     const { themeIsDark, toggleTheme } = useTheme();
 
@@ -18,8 +20,8 @@ export default function App({ main, modal, isAtHome, isNaviHidden }){
             >
                 { modal }
             </ModalContainer>
-            <Header isAtHome={isAtHome} isNaviHidden={isNaviHidden} toggleTheme={toggleTheme}/>
-            <div id="app-content" className={themeIsDark ? 'is-dark':'is-light'}>
+            <Header isAtHome={isAtHome} isNaviHidden={isNaviHidden} toggleTheme={toggleTheme} />
+            <div id="app-content" className={themeIsDark ? 'is-dark' : 'is-light'}>
                 { main }
             </div>
         </div>

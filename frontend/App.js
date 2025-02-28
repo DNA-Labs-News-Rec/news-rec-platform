@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable global-require */
 import React, { PureComponent } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -20,10 +21,11 @@ import StorageKeys from './components/utils/StorageKeys';
 
 
 // when running in Expo client, do not show yellow box for react-native-i18n linking warning
+// eslint-disable-next-line no-console
 console.ignoredYellowBox = ['react-native-i18n module is not correctly linked'];
 
-const SERVER = 'wss://your.domain/websocket';
-// const SERVER = 'localhost';
+// const SERVER = 'wss://your.domain/websocket';
+const SERVER = 'localhost';
 // const SERVER = 'ws://192.168.0.22:3008/websocket';
 // const SERVER = 'ws://192.168.43.24:3008/websocket';
 
@@ -149,7 +151,7 @@ class App extends PureComponent {
             expoFontsLoading, asyncStorageTutorialLoading, asyncStorageColorLoading, tutorialDone,
         } = this.state;
 
-        if ( expoFontsLoading || asyncStorageTutorialLoading || asyncStorageColorLoading) {
+        if (expoFontsLoading || asyncStorageTutorialLoading || asyncStorageColorLoading) {
             return <Loading />;
         }
 

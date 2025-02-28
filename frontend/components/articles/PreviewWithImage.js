@@ -196,7 +196,7 @@ class PreviewWithImage extends Component {
         } = this.props;
         if (navigation.state.routeName !== 'Article') {
             navigation.push('Article', {
-                articleId: _id, 
+                articleId: _id,
                 isInReadingList,
                 isInArchive,
                 primaryCategory,

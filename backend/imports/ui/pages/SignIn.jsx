@@ -40,8 +40,8 @@ export default class SignIn extends Component {
         this.setState({ errorMessage: '', isLoading: true });
 
         const email = event.target.email.value;
-        const password = event.target.password.value;      
-    
+        const password = event.target.password.value;
+
         Meteor.loginWithPassword(email, password, (err) => {
             if (err) {
                 this.setState({ errorMessage: err.reason, isLoading: false });

@@ -5,7 +5,7 @@ import { SURVEYS } from './surveys';
 import Experiments from '../../../api/experiments';
 import Algorithms from '../../../api/algorithms';
 import { EXPERIMENT } from './experiments';
-import {ALGORITHMS} from './algorithms';
+import { ALGORITHMS } from './algorithms';
 
 const numberOfNewsArticlesInDatabase = NewsArticles.find().count();
 if (numberOfNewsArticlesInDatabase === 0) {
